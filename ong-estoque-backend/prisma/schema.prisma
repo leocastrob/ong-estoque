@@ -1,0 +1,39 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senha     String
+  criadoEm  DateTime @default(now())
+}
+
+model Produto {
+  id            String         @id @default(uuid())
+  nome          String
+  categoria     String
+  quantidade    Int            @default(0)
+  validade      DateTime?      // A interrogação significa que é opcional
+  criadoEm      DateTime       @default(now())
+  movimentacoes Movimentacao[] // Relacionamento com a tabela de movimentações
+}
+
+model Movimentacao {
+  id         String   @id @default(uuid())
+  tipo       String   // "ENTRADA" ou "SAIDA"
+  quantidade Int
+  data       DateTime @default(now())
+  
+  // Relacionamento (Uma movimentação pertence a um Produto)
+  produto    Produto  @relation(fields: [produtoId], references: [id])
+  produtoId  String
+}
